@@ -1,0 +1,1358 @@
+```html
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Pro Yunus</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    user-select:none;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:
+        radial-gradient(circle at top,#182848,#070b16 55%,#03050a);
+    color:white;
+    min-height:100vh;
+}
+
+header{
+    position:sticky;
+    top:0;
+    z-index:100;
+    padding:18px 35px;
+    background:rgba(5,8,18,.92);
+    backdrop-filter:blur(15px);
+    border-bottom:1px solid #263454;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:900;
+    letter-spacing:1px;
+}
+
+.logo span{
+    color:#00eaff;
+}
+
+.search{
+    width:min(420px,45vw);
+    padding:13px 18px;
+    border-radius:30px;
+    border:1px solid #344567;
+    background:#0c1324;
+    color:white;
+    outline:none;
+    font-size:15px;
+}
+
+.hero{
+    min-height:330px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:60px 20px;
+}
+
+.hero h1{
+    font-size:clamp(42px,7vw,86px);
+    font-weight:1000;
+    background:linear-gradient(90deg,#00eaff,#7c5cff,#ff43d0);
+    -webkit-background-clip:text;
+    color:transparent;
+}
+
+.hero p{
+    margin-top:15px;
+    color:#aebbd5;
+    font-size:18px;
+}
+
+.buttons{
+    margin-top:30px;
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    border:0;
+    border-radius:14px;
+    padding:13px 22px;
+    color:white;
+    background:#111d35;
+    border:1px solid #304467;
+    cursor:pointer;
+    font-weight:bold;
+    transition:.2s;
+}
+
+.btn:hover{
+    transform:translateY(-3px);
+    background:#172947;
+}
+
+.btn.active{
+    background:linear-gradient(90deg,#00aeea,#675cff);
+    border-color:transparent;
+}
+
+.container{
+    width:min(1450px,94%);
+    margin:auto;
+    padding-bottom:70px;
+}
+
+.section-title{
+    margin:20px 0;
+    font-size:28px;
+}
+
+.games{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:20px;
+}
+
+.card{
+    min-height:250px;
+    padding:25px;
+    border-radius:22px;
+    background:linear-gradient(145deg,#111b31,#09101e);
+    border:1px solid #263857;
+    cursor:pointer;
+    transition:.25s;
+    position:relative;
+    overflow:hidden;
+}
+
+.card:hover{
+    transform:translateY(-8px) scale(1.02);
+    border-color:#00d9ff;
+    box-shadow:0 15px 45px #0008;
+}
+
+.icon{
+    font-size:70px;
+    margin-bottom:18px;
+}
+
+.card h3{
+    font-size:22px;
+}
+
+.card p{
+    color:#8fa0bd;
+    margin-top:8px;
+}
+
+.tag{
+    display:inline-block;
+    margin-top:16px;
+    padding:6px 10px;
+    border-radius:20px;
+    background:#172640;
+    color:#72eaff;
+    font-size:12px;
+}
+
+#gameScreen{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:999;
+    background:#02050b;
+    padding:20px;
+    overflow:auto;
+}
+
+.gameTop{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.gameTop h2{
+    font-size:26px;
+}
+
+.close{
+    background:#e93458;
+    border:0;
+    color:white;
+    padding:11px 18px;
+    border-radius:12px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+#canvas{
+    display:block;
+    margin:auto;
+    width:min(900px,95vw);
+    height:auto;
+    max-height:75vh;
+    background:#050a14;
+    border:2px solid #304a72;
+    border-radius:15px;
+}
+
+.controls{
+    text-align:center;
+    margin-top:15px;
+    color:#9aabc5;
+}
+
+.stats{
+    text-align:center;
+    margin:12px;
+    font-size:18px;
+}
+
+footer{
+    padding:40px;
+    text-align:center;
+    border-top:1px solid #1e2c46;
+    color:#72829c;
+}
+
+@media(max-width:600px){
+    header{
+        flex-direction:column;
+    }
+
+    .search{
+        width:100%;
+    }
+
+    .hero{
+        min-height:270px;
+    }
+
+    .card{
+        min-height:210px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">🎮 GAME <span>PRO</span> YUNUS</div>
+
+    <input
+        id="search"
+        class="search"
+        placeholder="🔎 Oyun ara..."
+        oninput="searchGames()"
+    >
+</header>
+
+<section class="hero">
+    <div>
+        <h1>GAME PRO YUNUS</h1>
+        <p>⚡ Klasik oyunlar • 🐱 Kedi oyunları • 🏆 Skorlar • 🎮 Tam ekran</p>
+
+        <div class="buttons">
+            <button class="btn active" onclick="filterGames('all',this)">Tümü</button>
+            <button class="btn" onclick="filterGames('classic',this)">Klasikler</button>
+            <button class="btn" onclick="filterGames('cat',this)">🐱 Kediler</button>
+            <button class="btn" onclick="filterGames('arcade',this)">Arcade</button>
+        </div>
+    </div>
+</section>
+
+<main class="container">
+
+<h2 class="section-title">🔥 Oyunlar</h2>
+
+<div class="games" id="games">
+
+<div class="card" data-category="classic" data-name="snake yılan">
+<div class="icon">🐍</div>
+<h3>Snake</h3>
+<p>Klasik yılan oyunu.</p>
+<span class="tag">KLASİK</span>
+</div>
+
+<div class="card" data-category="classic" data-name="pong">
+<div class="icon">🏓</div>
+<h3>Pong</h3>
+<p>Topu rakibe geçir!</p>
+<span class="tag">KLASİK</span>
+</div>
+
+<div class="card" data-category="classic" data-name="breakout">
+<div class="icon">🧱</div>
+<h3>Breakout</h3>
+<p>Blokları parçala.</p>
+<span class="tag">KLASİK</span>
+</div>
+
+<div class="card" data-category="classic" data-name="memory hafıza">
+<div class="icon">🧠</div>
+<h3>Memory</h3>
+<p>Eşleşen kartları bul.</p>
+<span class="tag">PUZZLE</span>
+</div>
+
+<div class="card" data-category="arcade" data-name="flappy bird">
+<div class="icon">🐦</div>
+<h3>Flappy Bird</h3>
+<p>Engellerden kaç.</p>
+<span class="tag">ARCADE</span>
+</div>
+
+<div class="card" data-category="arcade" data-name="space">
+<div class="icon">🚀</div>
+<h3>Space Dodge</h3>
+<p>Asteroitlerden kaç.</p>
+<span class="tag">ARCADE</span>
+</div>
+
+<div class="card" data-category="cat" data-name="cat kedi kedi jump">
+<div class="icon">🐱</div>
+<h3>Cat Jump</h3>
+<p>Kediyi zıplat ve puan topla.</p>
+<span class="tag">KEDİ</span>
+</div>
+
+<div class="card" data-category="cat" data-name="cat catcher kedi">
+<div class="icon">🐈</div>
+<h3>Cat Catcher</h3>
+<p>Kaçan kediyi yakala.</p>
+<span class="tag">KEDİ</span>
+</div>
+
+<div class="card" data-category="cat" data-name="cat clicker">
+<div class="icon">😺</div>
+<h3>Cat Clicker</h3>
+<p>Kediye tıklayarak skor kazan.</p>
+<span class="tag">KEDİ</span>
+</div>
+
+<div class="card" data-category="classic" data-name="2048">
+<div class="icon">🔢</div>
+<h3>2048</h3>
+<p>Sayıları birleştir.</p>
+<span class="tag">PUZZLE</span>
+</div>
+
+<div class="card" data-category="classic" data-name="reaction">
+<div class="icon">⚡</div>
+<h3>Reaction</h3>
+<p>Ne kadar hızlısın?</p>
+<span class="tag">SKOR</span>
+</div>
+
+<div class="card" data-category="arcade" data-name="dodger">
+<div class="icon">💫</div>
+<h3>Dodger</h3>
+<p>Engellerden mümkün olduğunca uzun kaç.</p>
+<span class="tag">ARCADE</span>
+</div>
+
+</div>
+</main>
+
+<footer>
+    🎮 Game Pro Yunus © 2026 — Tarayıcıda çalışan mini oyun merkezi
+</footer>
+
+<div id="gameScreen">
+
+<div class="gameTop">
+    <h2 id="gameTitle">Oyun</h2>
+    <button class="close" onclick="closeGame()">✕ Kapat</button>
+</div>
+
+<div class="stats">
+    Skor: <b id="score">0</b>
+</div>
+
+<canvas id="canvas" width="900" height="600"></canvas>
+
+<div class="controls" id="controls">
+    Klavye ile oyna
+</div>
+
+</div>
+
+<script>
+
+const cards=document.querySelectorAll(".card");
+
+cards.forEach(card=>{
+    card.addEventListener("click",()=>{
+        startGame(card.dataset.name);
+    });
+});
+
+function filterGames(category,button){
+
+    document.querySelectorAll(".btn").forEach(x=>{
+        x.classList.remove("active");
+    });
+
+    button.classList.add("active");
+
+    cards.forEach(card=>{
+        card.style.display=
+            category==="all" ||
+            card.dataset.category===category
+            ? "block":"none";
+    });
+}
+
+function searchGames(){
+
+    const q=document.getElementById("search").value.toLowerCase();
+
+    cards.forEach(card=>{
+        card.style.display=
+            card.dataset.name.includes(q)
+            ? "block":"none";
+    });
+}
+
+const screen=document.getElementById("gameScreen");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+const title=document.getElementById("gameTitle");
+const scoreEl=document.getElementById("score");
+const controls=document.getElementById("controls");
+
+let animation;
+let keys={};
+let score=0;
+
+document.addEventListener("keydown",e=>{
+    keys[e.key.toLowerCase()]=true;
+});
+
+document.addEventListener("keyup",e=>{
+    keys[e.key.toLowerCase()]=false;
+});
+
+function openGame(name){
+    screen.style.display="block";
+    score=0;
+    scoreEl.textContent=score;
+}
+
+function closeGame(){
+    screen.style.display="none";
+    cancelAnimationFrame(animation);
+}
+
+function startGame(name){
+
+    openGame(name);
+
+    if(name.includes("snake"))
+        snakeGame();
+
+    else if(name.includes("pong"))
+        pongGame();
+
+    else if(name.includes("breakout"))
+        breakoutGame();
+
+    else if(name.includes("memory"))
+        memoryGame();
+
+    else if(name.includes("flappy"))
+        flappyGame();
+
+    else if(name.includes("space"))
+        spaceGame();
+
+    else if(name.includes("cat jump"))
+        catJump();
+
+    else if(name.includes("cat catcher"))
+        catCatcher();
+
+    else if(name.includes("cat clicker"))
+        catClicker();
+
+    else if(name.includes("2048"))
+        game2048();
+
+    else if(name.includes("reaction"))
+        reactionGame();
+
+    else
+        dodgeGame();
+}
+
+/* =========================
+   SNAKE
+========================= */
+
+function snakeGame(){
+
+    title.textContent="🐍 Snake";
+    controls.textContent="WASD veya ok tuşları";
+
+    let snake=[
+        {x:15,y:15},
+        {x:14,y:15},
+        {x:13,y:15}
+    ];
+
+    let food={
+        x:Math.floor(Math.random()*30),
+        y:Math.floor(Math.random()*20)
+    };
+
+    let dir={x:1,y:0};
+    let last=0;
+
+    function loop(t){
+
+        if(t-last>100){
+            last=t;
+
+            if(keys["arrowup"]||keys["w"])
+                dir={x:0,y:-1};
+
+            if(keys["arrowdown"]||keys["s"])
+                dir={x:0,y:1};
+
+            if(keys["arrowleft"]||keys["a"])
+                dir={x:-1,y:0};
+
+            if(keys["arrowright"]||keys["d"])
+                dir={x:1,y:0};
+
+            let head={
+                x:snake[0].x+dir.x,
+                y:snake[0].y+dir.y
+            };
+
+            if(
+                head.x<0||
+                head.y<0||
+                head.x>=30||
+                head.y>=20||
+                snake.some(p=>p.x===head.x&&p.y===head.y)
+            ){
+                alert("Oyun bitti! Skor: "+score);
+                return snakeGame();
+            }
+
+            snake.unshift(head);
+
+            if(head.x===food.x&&head.y===food.y){
+                score+=10;
+                scoreEl.textContent=score;
+
+                food={
+                    x:Math.floor(Math.random()*30),
+                    y:Math.floor(Math.random()*20)
+                };
+            }else{
+                snake.pop();
+            }
+        }
+
+        ctx.fillStyle="#050b15";
+        ctx.fillRect(0,0,900,600);
+
+        ctx.fillStyle="#00eaff";
+
+        snake.forEach(p=>{
+            ctx.fillRect(
+                p.x*30,
+                p.y*30,
+                27,
+                27
+            );
+        });
+
+        ctx.fillStyle="#ff3d68";
+
+        ctx.beginPath();
+        ctx.arc(
+            food.x*30+15,
+            food.y*30+15,
+            11,
+            0,
+            Math.PI*2
+        );
+        ctx.fill();
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   PONG
+========================= */
+
+function pongGame(){
+
+    title.textContent="🏓 Pong";
+    controls.textContent="W/S veya ↑/↓";
+
+    let ball={x:450,y:300,vx:5,vy:4};
+    let py=250;
+    let enemy=250;
+
+    function loop(){
+
+        ctx.fillStyle="#050b15";
+        ctx.fillRect(0,0,900,600);
+
+        if(keys["w"]||keys["arrowup"])
+            py-=7;
+
+        if(keys["s"]||keys["arrowdown"])
+            py+=7;
+
+        enemy+=(ball.y-enemy)*.045;
+
+        ball.x+=ball.vx;
+        ball.y+=ball.vy;
+
+        if(ball.y<10||ball.y>590)
+            ball.vy*=-1;
+
+        if(
+            ball.x<45 &&
+            ball.y>py &&
+            ball.y<py+100
+        ){
+            ball.vx=Math.abs(ball.vx);
+            score++;
+        }
+
+        if(
+            ball.x>855 &&
+            ball.y>enemy &&
+            ball.y<enemy+100
+        ){
+            ball.vx=-Math.abs(ball.vx);
+        }
+
+        if(ball.x<0||ball.x>900){
+            ball={x:450,y:300,vx:5*(Math.random()>.5?1:-1),vy:4};
+            scoreEl.textContent=score;
+        }
+
+        ctx.fillStyle="#00eaff";
+        ctx.fillRect(20,py,20,100);
+
+        ctx.fillStyle="#ff4fd8";
+        ctx.fillRect(860,enemy,20,100);
+
+        ctx.fillStyle="white";
+        ctx.beginPath();
+        ctx.arc(ball.x,ball.y,12,0,Math.PI*2);
+        ctx.fill();
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   BREAKOUT
+========================= */
+
+function breakoutGame(){
+
+    title.textContent="🧱 Breakout";
+    controls.textContent="Fare veya ← →";
+
+    let paddle=390;
+    let ball={x:450,y:500,vx:5,vy:-5};
+
+    let bricks=[];
+
+    for(let y=0;y<5;y++)
+        for(let x=0;x<10;x++)
+            bricks.push({
+                x:x*88+10,
+                y:y*30+30,
+                alive:true
+            });
+
+    function loop(){
+
+        ctx.fillStyle="#050b15";
+        ctx.fillRect(0,0,900,600);
+
+        if(keys["arrowleft"])
+            paddle-=8;
+
+        if(keys["arrowright"])
+            paddle+=8;
+
+        paddle=Math.max(0,Math.min(800,paddle));
+
+        ball.x+=ball.vx;
+        ball.y+=ball.vy;
+
+        if(ball.x<10||ball.x>890)
+            ball.vx*=-1;
+
+        if(ball.y<10)
+            ball.vy*=-1;
+
+        if(
+            ball.y>540 &&
+            ball.x>paddle &&
+            ball.x<paddle+100
+        ){
+            ball.vy=-Math.abs(ball.vy);
+        }
+
+        bricks.forEach(b=>{
+
+            if(
+                b.alive &&
+                ball.x>b.x &&
+                ball.x<b.x+78 &&
+                ball.y>b.y &&
+                ball.y<b.y+22
+            ){
+                b.alive=false;
+                ball.vy*=-1;
+                score+=10;
+                scoreEl.textContent=score;
+            }
+
+        });
+
+        if(ball.y>620){
+            alert("Kaybettin! Skor: "+score);
+            return breakoutGame();
+        }
+
+        ctx.fillStyle="#00eaff";
+        ctx.fillRect(paddle,560,100,15);
+
+        ctx.fillStyle="#fff";
+        ctx.beginPath();
+        ctx.arc(ball.x,ball.y,10,0,Math.PI*2);
+        ctx.fill();
+
+        bricks.forEach(b=>{
+            if(b.alive){
+                ctx.fillStyle="#7c5cff";
+                ctx.fillRect(b.x,b.y,78,22);
+            }
+        });
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   CAT CLICKER
+========================= */
+
+function catClicker(){
+
+    title.textContent="😺 Cat Clicker";
+    controls.textContent="Kediye tıkla!";
+
+    let catX=450;
+    let catY=300;
+
+    canvas.onclick=()=>{
+
+        score++;
+        scoreEl.textContent=score;
+
+        catX=150+Math.random()*600;
+        catY=150+Math.random()*300;
+    };
+
+    function loop(){
+
+        ctx.fillStyle="#11152a";
+        ctx.fillRect(0,0,900,600);
+
+        ctx.font="150px Arial";
+        ctx.textAlign="center";
+        ctx.fillText("🐱",catX,catY);
+
+        ctx.font="25px Arial";
+        ctx.fillStyle="white";
+        ctx.fillText(
+            "Kediye tıkla!",
+            450,
+            70
+        );
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   CAT JUMP
+========================= */
+
+function catJump(){
+
+    title.textContent="🐱 Cat Jump";
+    controls.textContent="SPACE ile zıpla";
+
+    let y=480;
+    let vy=0;
+    let obstacle=900;
+
+    function loop(){
+
+        ctx.fillStyle="#11152a";
+        ctx.fillRect(0,0,900,600);
+
+        if(keys[" "]||keys["space"]){
+            if(y>=480)
+                vy=-14;
+        }
+
+        vy+=.6;
+        y+=vy;
+
+        if(y>480){
+            y=480;
+            vy=0;
+        }
+
+        obstacle-=6;
+
+        if(obstacle<0){
+            obstacle=900;
+            score++;
+            scoreEl.textContent=score;
+        }
+
+        if(
+            obstacle<150 &&
+            obstacle>70 &&
+            y>420
+        ){
+            alert("Kedi düştü! Skor: "+score);
+            return catJump();
+        }
+
+        ctx.font="80px Arial";
+        ctx.fillText("🐱",100,y+65);
+
+        ctx.fillStyle="#ff426d";
+        ctx.fillRect(obstacle,500,70,80);
+
+        ctx.fillStyle="#65ff9a";
+        ctx.fillRect(0,580,900,20);
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   CAT CATCHER
+========================= */
+
+function catCatcher(){
+
+    title.textContent="🐈 Cat Catcher";
+    controls.textContent="Fare ile hareket et";
+
+    let catX=400;
+    let catY=200;
+
+    canvas.onmousemove=e=>{
+        const r=canvas.getBoundingClientRect();
+
+        catX=(e.clientX-r.left)*
+             canvas.width/r.width;
+
+        catY=(e.clientY-r.top)*
+             canvas.height/r.height;
+    };
+
+    function loop(){
+
+        ctx.fillStyle="#0b1020";
+        ctx.fillRect(0,0,900,600);
+
+        ctx.font="100px Arial";
+        ctx.textAlign="center";
+        ctx.fillText("🐈",catX,catY);
+
+        ctx.font="30px Arial";
+        ctx.fillStyle="white";
+        ctx.fillText("Kediyi yakala!",450,60);
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   FLAPPY
+========================= */
+
+function flappyGame(){
+
+    title.textContent="🐦 Flappy";
+    controls.textContent="SPACE / ↑";
+
+    let y=300;
+    let vy=0;
+    let pipe=900;
+    let gap=250;
+
+    function loop(){
+
+        ctx.fillStyle="#101c35";
+        ctx.fillRect(0,0,900,600);
+
+        if(keys[" "]||keys["arrowup"])
+            vy=-8;
+
+        vy+=.35;
+        y+=vy;
+
+        pipe-=4;
+
+        if(pipe<-80){
+            pipe=900;
+            gap=150+Math.random()*250;
+            score++;
+            scoreEl.textContent=score;
+        }
+
+        ctx.fillStyle="#58e879";
+        ctx.fillRect(pipe,0,80,gap-80);
+        ctx.fillRect(pipe,gap+100,80,500);
+
+        ctx.font="55px Arial";
+        ctx.fillText("🐦",150,y);
+
+        if(y<0||y>600){
+            alert("Oyun bitti!");
+            return flappyGame();
+        }
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   SPACE DODGE
+========================= */
+
+function spaceGame(){
+
+    title.textContent="🚀 Space Dodge";
+    controls.textContent="A/D veya ← →";
+
+    let x=450;
+    let rocks=[];
+
+    for(let i=0;i<8;i++)
+        rocks.push({
+            x:Math.random()*900,
+            y:Math.random()*-600,
+            s:3+Math.random()*4
+        });
+
+    function loop(){
+
+        ctx.fillStyle="#02030b";
+        ctx.fillRect(0,0,900,600);
+
+        if(keys["a"]||keys["arrowleft"])
+            x-=7;
+
+        if(keys["d"]||keys["arrowright"])
+            x+=7;
+
+        x=Math.max(30,Math.min(870,x));
+
+        ctx.font="55px Arial";
+        ctx.fillText("🚀",x,540);
+
+        rocks.forEach(r=>{
+
+            r.y+=r.s;
+
+            if(r.y>620){
+                r.y=-50;
+                r.x=Math.random()*900;
+                score++;
+                scoreEl.textContent=score;
+            }
+
+            ctx.font="45px Arial";
+            ctx.fillText("☄️",r.x,r.y);
+
+            if(
+                Math.abs(r.x-x)<45 &&
+                Math.abs(r.y-520)<45
+            ){
+                alert("Çarptın! Skor: "+score);
+                return spaceGame();
+            }
+
+        });
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   DODGER
+========================= */
+
+function dodgeGame(){
+
+    title.textContent="💫 Dodger";
+    controls.textContent="WASD / ok tuşları";
+
+    let x=430,y=300;
+    let enemies=[];
+
+    for(let i=0;i<10;i++)
+        enemies.push({
+            x:Math.random()*900,
+            y:Math.random()*600,
+            vx:(Math.random()-.5)*5,
+            vy:(Math.random()-.5)*5
+        });
+
+    function loop(){
+
+        ctx.fillStyle="#080c18";
+        ctx.fillRect(0,0,900,600);
+
+        if(keys["w"]||keys["arrowup"])y-=5;
+        if(keys["s"]||keys["arrowdown"])y+=5;
+        if(keys["a"]||keys["arrowleft"])x-=5;
+        if(keys["d"]||keys["arrowright"])x+=5;
+
+        x=Math.max(0,Math.min(900,x));
+        y=Math.max(0,Math.min(600,y));
+
+        ctx.font="50px Arial";
+        ctx.fillText("😎",x,y);
+
+        enemies.forEach(e=>{
+
+            e.x+=e.vx;
+            e.y+=e.vy;
+
+            if(e.x<0||e.x>900)e.vx*=-1;
+            if(e.y<0||e.y>600)e.vy*=-1;
+
+            ctx.font="40px Arial";
+            ctx.fillText("🔴",e.x,e.y);
+
+            if(
+                Math.abs(e.x-x)<35 &&
+                Math.abs(e.y-y)<35
+            ){
+                alert("Yakalandın!");
+                return dodgeGame();
+            }
+        });
+
+        score++;
+        scoreEl.textContent=Math.floor(score/10);
+
+        animation=requestAnimationFrame(loop);
+    }
+
+    animation=requestAnimationFrame(loop);
+}
+
+/* =========================
+   MEMORY
+========================= */
+
+function memoryGame(){
+
+    title.textContent="🧠 Memory";
+    controls.textContent="Kartlara tıkla";
+
+    canvas.onclick=null;
+
+    let emojis=[
+        "🐱","🐱",
+        "🐶","🐶",
+        "🍕","🍕",
+        "🚀","🚀",
+        "⭐","⭐",
+        "🎮","🎮"
+    ];
+
+    emojis.sort(()=>Math.random()-.5);
+
+    let opened=[];
+    let matched=[];
+
+    canvas.onclick=e=>{
+
+        const r=canvas.getBoundingClientRect();
+
+        let x=Math.floor(
+            ((e.clientX-r.left)*
+            canvas.width/r.width)/150
+        );
+
+        let y=Math.floor(
+            ((e.clientY-r.top)*
+            canvas.height/r.height)/150
+        );
+
+        let i=y*6+x;
+
+        if(i<0||i>=emojis.length)
+            return;
+
+        if(opened.includes(i)||matched.includes(i))
+            return;
+
+        opened.push(i);
+
+        draw();
+
+        if(opened.length===2){
+
+            setTimeout(()=>{
+
+                if(emojis[opened[0]]===emojis[opened[1]]){
+
+                    matched.push(...opened);
+
+                    score+=10;
+                    scoreEl.textContent=score;
+
+                }
+
+                opened=[];
+
+                draw();
+
+            },500);
+        }
+    };
+
+    function draw(){
+
+        ctx.fillStyle="#080c18";
+        ctx.fillRect(0,0,900,600);
+
+        for(let i=0;i<12;i++){
+
+            let x=(i%6)*150;
+            let y=Math.floor(i/6)*150;
+
+            ctx.fillStyle="#182947";
+            ctx.fillRect(x+5,y+5,140,140);
+
+            if(
+                opened.includes(i)||
+                matched.includes(i)
+            ){
+                ctx.font="65px Arial";
+                ctx.textAlign="center";
+                ctx.fillText(
+                    emojis[i],
+                    x+75,
+                    y+95
+                );
+            }else{
+                ctx.font="55px Arial";
+                ctx.textAlign="center";
+                ctx.fillText("❓",x+75,y+95);
+            }
+        }
+    }
+
+    draw();
+}
+
+/* =========================
+   2048
+========================= */
+
+function game2048(){
+
+    title.textContent="🔢 2048";
+    controls.textContent="Ok tuşları";
+
+    let board=Array(16).fill(0);
+
+    function add(){
+
+        let empty=board
+            .map((v,i)=>v===0?i:-1)
+            .filter(i=>i>=0);
+
+        if(!empty.length)return;
+
+        board[empty[Math.floor(
+            Math.random()*empty.length
+        )]]=2;
+    }
+
+    add();
+    add();
+
+    document.onkeydown=e=>{
+
+        let old=board.join();
+
+        if(e.key==="ArrowLeft")move(-1,0);
+        if(e.key==="ArrowRight")move(1,0);
+        if(e.key==="ArrowUp")move(0,-1);
+        if(e.key==="ArrowDown")move(0,1);
+
+        if(board.join()!==old)
+            add();
+
+        draw();
+    };
+
+    function move(dx,dy){
+
+        let copy=Array(16).fill(0);
+
+        for(let y=0;y<4;y++){
+            for(let x=0;x<4;x++){
+
+                let nx=x+dx;
+                let ny=y+dy;
+
+                if(nx>=0&&nx<4&&ny>=0&&ny<4){
+
+                    copy[ny*4+nx]=
+                        board[y*4+x];
+                }
+            }
+        }
+
+        board=copy;
+    }
+
+    function draw(){
+
+        ctx.fillStyle="#0d1424";
+        ctx.fillRect(0,0,900,600);
+
+        for(let i=0;i<16;i++){
+
+            let x=200+(i%4)*120;
+            let y=60+Math.floor(i/4)*120;
+
+            ctx.fillStyle="#182947";
+            ctx.fillRect(x,y,105,105);
+
+            if(board[i]){
+
+                ctx.fillStyle="#fff";
+                ctx.font="32px Arial";
+                ctx.textAlign="center";
+
+                ctx.fillText(
+                    board[i],
+                    x+52,
+                    y+65
+                );
+            }
+        }
+    }
+
+    draw();
+}
+
+/* =========================
+   REACTION
+========================= */
+
+function reactionGame(){
+
+    title.textContent="⚡ Reaction";
+    controls.textContent="Kırmızı alan yeşile dönünce tıkla";
+
+    let ready=false;
+    let start=0;
+
+    canvas.onclick=()=>{
+
+        if(!ready)return;
+
+        let time=Date.now()-start;
+
+        score=time;
+
+        scoreEl.textContent=time+" ms";
+
+        alert("Tepki süren: "+time+" ms");
+
+        reactionGame();
+    };
+
+    ctx.fillStyle="#e93458";
+    ctx.fillRect(0,0,900,600);
+
+    setTimeout(()=>{
+
+        ready=true;
+        start=Date.now();
+
+        ctx.fillStyle="#36e66f";
+        ctx.fillRect(0,0,900,600);
+
+        ctx.fillStyle="white";
+        ctx.font="50px Arial";
+        ctx.textAlign="center";
+        ctx.fillText(
+            "ŞİMDİ TIKLA!",
+            450,
+            310
+        );
+
+    },1000+Math.random()*3000);
+}
+
+</script>
+
+</body>
+</html>
+```
